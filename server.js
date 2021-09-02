@@ -33,12 +33,17 @@ server.get('/', (req, res) => {
 
 // get products
 server.get('/products', (req, res) => {
-    const sql = 'SELECT * FROM productos NATURAL JOIN stock LIMIT 3;';
+    const sql = 'SELECT * FROM productos ;';
 
     connection.query(sql, (err, result) => {
         if (err) throw err;
         if (result.length > 0) {
-            res.json(result);
+            const page = req.query.page;
+            const limit = req.query.limit;
+            const startIndex = (page - 1) * limit;
+            const endIndex = page * limit;
+
+            res.json(result.slice(startIndex, endIndex));
         } else {
             res.send('there are not products');
         }
